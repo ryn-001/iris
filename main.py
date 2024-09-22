@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score, classification_report
 
 # Load the dataset
 # Load the dataset without the 'Id' column
-data = pd.read_csv('iris.csv')
+data = pd.read_csv('Iris.csv')
 X = data.drop(columns=['Id', 'Species'])  # Remove 'Id' and 'Species' columns for training features
 y = data['Species']
 
