@@ -1,13 +1,18 @@
-from flask import Flask, render_template, request
+from flask import Flask, request, render_template_string
 import pandas as pd
-import joblib
+import pickle
 
 app = Flask(__name__)
-model = joblib.load('iris_model.pkl')  # Load your trained model
+
+# Load the model
+with open('iris_model.pkl', 'rb') as f:
+    loaded_model = pickle.load(f)
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    # Read the index.html file and return it
+    with open('index.html') as f:
+        return f.read()
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -18,9 +23,14 @@ def predict():
 
     input_data = pd.DataFrame([[sepal_length, sepal_width, petal_length, petal_width]], 
                                columns=['SepalLengthCm', 'SepalWidthCm', 'PetalLengthCm', 'PetalWidthCm'])
-    prediction = model.predict(input_data)
-    
-    return render_template('result.html', prediction=prediction[0])
+    prediction = loaded_model.predict(input_data)
+
+    # Read the result.html file and render it with the prediction
+    with open('result.html') as f:
+        result_html = f.read()
+    result_html = result_html.replace('{{ prediction }}', prediction[0])  # Replace placeholder
+
+    return result_html
 
 if __name__ == '__main__':
     app.run(debug=True)
